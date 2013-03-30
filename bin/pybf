@@ -1,0 +1,8 @@
+#!/usr/bin/env python
+# Copyright (c) Amr Ali <amr.ali.cc@gmail.com>
+# See LICENSE for details.
+
+from pybf import pybf_main
+
+if __name__ == '__main__':
+    pybf_main()
