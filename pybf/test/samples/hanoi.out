@@ -1,0 +1,42 @@
+       A             B             C
+       |             |             |
+       |             |             |
+    o=====o    4     |             |
+   o=======o   5     |             o   1
+  o=========o  6     |            o=o  2
+ o===========o 7     |           o===o 3
+===========================================
+[  - --=-== The Towers of Hanoi ==-=-- -  ]
+===========================================
+
+Enter # of rings (max 255, but remember output is 2^n): Move disk 1 from A to C.
+Move disk 2 from A to B.
+Move disk 1 from C to B.
+Move disk 3 from A to C.
+Move disk 1 from B to A.
+Move disk 2 from B to C.
+Move disk 1 from A to C.
+Move disk 4 from A to B.
+Move disk 1 from C to B.
+Move disk 2 from C to A.
+Move disk 1 from B to A.
+Move disk 3 from C to B.
+Move disk 1 from A to C.
+Move disk 2 from A to B.
+Move disk 1 from C to B.
+Move disk 5 from A to C.
+Move disk 1 from B to A.
+Move disk 2 from B to C.
+Move disk 1 from A to C.
+Move disk 3 from B to A.
+Move disk 1 from C to B.
+Move disk 2 from C to A.
+Move disk 1 from B to A.
+Move disk 4 from B to C.
+Move disk 1 from A to C.
+Move disk 2 from A to B.
+Move disk 1 from C to B.
+Move disk 3 from A to C.
+Move disk 1 from B to A.
+Move disk 2 from B to C.
+Move disk 1 from A to C.

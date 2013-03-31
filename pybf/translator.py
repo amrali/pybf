@@ -3,8 +3,8 @@
 
 class Translator(object):
     """
-    A BrainFuck translator that takes any content and translate it
-    into BrainFuck code that when ran will reproduce the content.
+    A Brainfuck translator that takes any content and translate it
+    into Brainfuck code that when ran will reproduce the supplied content.
     """
 
     def __init__(self, fd=None, buf='', memory_size=16):
@@ -33,13 +33,25 @@ class Translator(object):
         Return the BF commands that will reproduce each byte read from the buffer.
         """
         prog = ''
-        for i in xrange(1, n + 1):
-            char = self._fd.read(i)
-            if not char: return None
+        data = self._fd.read(n)
+        if not data:
+            return None
 
-            byte = ord(char)
-            prog += self._translate(byte) + "."
+        for char in data:
+            prog += self._translate(ord(char)) + "."
         return prog
+
+    def read_all(self):
+        """
+        Helper function to read all the translated code in one call.
+        """
+        prog = ''
+        while True:
+            bfc = self.read(256)
+            if not bfc: break
+            prog += bfc
+        return prog
+
 
     def _init_code(self):
         """
