@@ -23,7 +23,6 @@ class Interpreter(object):
         self._ptr = 0
         self._memory = [0] * memory_size
         self._stack = [[], []]
-        self._skip_loop = False
 
     def read(self, n=1):
         """
@@ -41,24 +40,30 @@ class Interpreter(object):
         """
         import sys
         bfc = self._get_op(self._ip)
-        if not self._skip_loop:
-            if bfc == '>': self._ptr += 1
-            elif bfc == '<': self._ptr -= 1
-            elif bfc == '+': self._memory[self._ptr] += 1
-            elif bfc == '-': self._memory[self._ptr] -= 1
-            elif bfc == ',': self._memory[self._ptr] = ord(sys.stdin.read(1))
-            elif bfc == '.': sys.stdout.write(chr(self._memory[self._ptr]))
-            elif bfc == '[':
-                if self._memory[self._ptr] == 0: self._skip_loop = True
-                else:
-                    self._skip_loop = False
-                    self._push_loop_ptr(self._ip)
-            elif bfc == ']':
-                self._skip_loop = False
-                if self._memory[self._ptr]:
-                    # Subtract one so that it gets added later at the
-                    # end of the function.
-                    self._ip = self._pop_loop_ptr() - 1
+        if bfc == '>': self._ptr += 1
+        elif bfc == '<': self._ptr -= 1
+        elif bfc == '+': self._memory[self._ptr] += 1
+        elif bfc == '-': self._memory[self._ptr] -= 1
+        elif bfc == ',': self._memory[self._ptr] = ord(sys.stdin.read(1))
+        elif bfc == '.': sys.stdout.write(chr(self._memory[self._ptr]))
+        elif bfc == '[':
+            if self._memory[self._ptr] == 0:
+                # Skip all further instructions till a matching ']' is found.
+                loop = 1
+                while loop > 0:
+                    self._ip -= 1
+                    bfc = self._get_op(self._ip)
+                    if bfc == '[':
+                        loop += 1
+                    elif bfc == ']':
+                        loop -= 1
+            else:
+                # Push loop IP to the stack so later we can jump to it directly.
+                self._push_loop_ptr(self._ip)
+        elif bfc == ']':
+            # Subtract one so that it gets added later at the
+            # end of the function.
+            self._ip = self._pop_loop_ptr() - 1
         self._ip += 1
 
     def _isvalid_op(self, bfc):
