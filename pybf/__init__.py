@@ -43,10 +43,7 @@ def pybf_main():
         else:
             itr = Interpreter(fd=cont_input)
         while itr.read(256): pass
-        try:
-            while True:
-                itr.interpret()
-        except EOPError: pass
+        while itr.interpret(): pass
         sys.stdout.flush()
     elif args.generate:
         if args.memory_size:

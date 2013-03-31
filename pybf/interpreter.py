@@ -1,12 +1,10 @@
 # Copyright (c) Amr Ali <amr.ali.cc@gmail.com>
 # See LICENSE for details.
 
-class EOPError(Exception): pass
-
 class Interpreter(object):
     """
-    A BrainFuck interpreter. This could be thought of it as the machine head
-    reading the tabe and executing instructions.
+    A Brainfuck interpreter. This could be thought of it as the machine head
+    reading the tape and executing instructions.
     """
 
     def __init__(self, fd=None, buf='', memory_size=30000):
@@ -40,6 +38,9 @@ class Interpreter(object):
         """
         import sys
         bfc = self._get_op(self._ip)
+        if bfc == False:
+            return False
+
         if bfc == '>':
             self._ptr += 1
         elif bfc == '<':
@@ -63,6 +64,8 @@ class Interpreter(object):
                         loop += 1
                     elif bfc == ']':
                         loop -= 1
+                    elif bfc == False:
+                        raise SyntaxError("unmatched '['")
             else:
                 # Push loop IP to the stack so later we can jump to it directly.
                 self._push_loop_ptr(self._ip)
@@ -71,6 +74,7 @@ class Interpreter(object):
             # end of the function.
             self._ip = self._pop_loop_ptr() - 1
         self._ip += 1
+        return True
 
     def _isvalid_op(self, bfc):
         return bfc in ['>', '<', '+', '-', '.', ',', '[', ']']
@@ -82,7 +86,7 @@ class Interpreter(object):
         try:
             return self._stack[0][ip]
         except IndexError:
-            raise EOPError("the well's dry")
+            return False
 
     def _push_loop_ptr(self, ip):
         self._stack[1].append(ip)
