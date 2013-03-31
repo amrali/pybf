@@ -41,6 +41,18 @@ class Translator(object):
             prog += self._translate(ord(char)) + "."
         return prog
 
+    def read_all(self):
+        """
+        Helper function to read all the translated code in one call.
+        """
+        prog = ''
+        while True:
+            bfc = self.read(256)
+            if not bfc: break
+            prog += bfc
+        return prog
+
+
     def _init_code(self):
         """
         Partition's the 0-255 range of possible byte values over available
