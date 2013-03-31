@@ -2,10 +2,22 @@
 # Copyright (c) Amr Ali <amr.ali.cc@gmail.com>
 # See LICENSE for details.
 
+import os
 from unittest import TextTestRunner
 from distutils.core import setup, Command
+from distutils.command.install import INSTALL_SCHEMES
 from pybf.test import suite as pybf_test_suite
 from pybf import __version__
+
+# Modify the data install dir to match the source install dir
+for scheme in INSTALL_SCHEMES.values():
+    scheme['data'] = scheme['purelib']
+
+def get_samples():
+    rel_dir = os.path.join("pybf", "test", "samples")
+    samples_dir = os.path.dirname(__file__)
+    samples_dir = os.path.join(samples_dir, "pybf", "test", "samples")
+    return (rel_dir, [os.path.join(samples_dir, sample) for sample in os.listdir(samples_dir)])
 
 class TestCommand(Command):
     user_options = []
@@ -25,6 +37,11 @@ class TestCommand(Command):
 
 packages = [
     'pybf',
+    'pybf.test',
+    ]
+
+data_files = [
+    get_samples(),
     ]
 
 classifiers = [
@@ -48,8 +65,9 @@ setup(
         maintainer = 'Amr Ali',
         maintainer_email = 'amr.ali.cc@gmail.com',
         url = 'https://github.com/amrali/pybf',
-        scripts = ['bin/pybf'],
+        scripts = [os.path.join('bin', 'pybf')],
         packages = packages,
+        data_files = data_files,
         license = 'GPLv3+',
         platforms = "Posix; MacOS X; Windows",
         classifiers = classifiers,
