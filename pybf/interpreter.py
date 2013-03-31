@@ -1,13 +1,15 @@
 # Copyright (c) Amr Ali <amr.ali.cc@gmail.com>
 # See LICENSE for details.
 
+import sys
+
 class Interpreter(object):
     """
     A Brainfuck interpreter. This could be thought of it as the machine head
     reading the tape and executing instructions.
     """
 
-    def __init__(self, fd=None, buf='', memory_size=30000):
+    def __init__(self, fd=None, buf='', memory_size=30000, fd_in=sys.stdin, fd_out=sys.stdout):
         from StringIO import StringIO
         super(Interpreter, self).__init__()
         if fd:
@@ -17,6 +19,8 @@ class Interpreter(object):
         else:
             raise RuntimeError("either fd or buf has to be specified")
 
+        self._fd_in = fd_in
+        sefl._fd_out = fd_out
         self._ip = 0
         self._ptr = 0
         self._memory = [0] * memory_size
@@ -36,7 +40,6 @@ class Interpreter(object):
         """
         Interpret a single op in memory.
         """
-        import sys
         bfc = self._get_op(self._ip)
         if bfc == False:
             return False
@@ -50,12 +53,12 @@ class Interpreter(object):
         elif bfc == '-':
             self._memory[self._ptr] = (self._memory[self._ptr] - 1) % 256
         elif bfc == ',':
-            char = sys.stdin.read(1)
+            char = self._fd_in.read(1)
             if len(char) == 0:
                 return False
             self._memory[self._ptr] = ord(char)
         elif bfc == '.':
-            sys.stdout.write(chr(self._memory[self._ptr]))
+            self._fd_out.write(chr(self._memory[self._ptr]))
         elif bfc == '[':
             if self._memory[self._ptr] == 0:
                 # Skip all further instructions till a matching ']' is found.
