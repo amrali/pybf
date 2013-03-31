@@ -50,7 +50,10 @@ class Interpreter(object):
         elif bfc == '-':
             self._memory[self._ptr] = (self._memory[self._ptr] - 1) % 256
         elif bfc == ',':
-            self._memory[self._ptr] = ord(sys.stdin.read(1))
+            char = sys.stdin.read(1)
+            if len(char) == 0:
+                return False
+            self._memory[self._ptr] = ord(char)
         elif bfc == '.':
             sys.stdout.write(chr(self._memory[self._ptr]))
         elif bfc == '[':
