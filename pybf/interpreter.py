@@ -77,7 +77,7 @@ class Interpreter(object):
                 # Skip all further instructions till a matching ']' is found.
                 loop = 1
                 while loop > 0:
-                    self._ip -= 1
+                    self._ip += 1
                     bfc = self._get_op(self._ip)
                     if bfc == '[':
                         loop += 1
