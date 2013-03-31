@@ -40,12 +40,18 @@ class Interpreter(object):
         """
         import sys
         bfc = self._get_op(self._ip)
-        if bfc == '>': self._ptr += 1
-        elif bfc == '<': self._ptr -= 1
-        elif bfc == '+': self._memory[self._ptr] += 1
-        elif bfc == '-': self._memory[self._ptr] -= 1
-        elif bfc == ',': self._memory[self._ptr] = ord(sys.stdin.read(1))
-        elif bfc == '.': sys.stdout.write(chr(self._memory[self._ptr]))
+        if bfc == '>':
+            self._ptr += 1
+        elif bfc == '<':
+            self._ptr -= 1
+        elif bfc == '+':
+            self._memory[self._ptr] = (self._memory[self._ptr] + 1) % 256
+        elif bfc == '-':
+            self._memory[self._ptr] = (self._memory[self._ptr] - 1) % 256
+        elif bfc == ',':
+            self._memory[self._ptr] = ord(sys.stdin.read(1))
+        elif bfc == '.':
+            sys.stdout.write(chr(self._memory[self._ptr]))
         elif bfc == '[':
             if self._memory[self._ptr] == 0:
                 # Skip all further instructions till a matching ']' is found.
