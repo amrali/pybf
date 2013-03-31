@@ -2,8 +2,26 @@
 # Copyright (c) Amr Ali <amr.ali.cc@gmail.com>
 # See LICENSE for details.
 
-from distutils.core import setup
+from unittest import TextTestRunner
+from distutils.core import setup, Command
+from pybf.test import suite as pybf_test_suite
 from pybf import __version__
+
+class TestCommand(Command):
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        """
+        Run all test modules.
+        """
+        t = TextTestRunner(verbosity = 2)
+        t.run(pybf_test_suite)
 
 packages = [
     'pybf',
@@ -35,4 +53,5 @@ setup(
         license = 'GPLv3+',
         platforms = "Posix; MacOS X; Windows",
         classifiers = classifiers,
+        cmdclass = {'test': TestCommand },
      )
