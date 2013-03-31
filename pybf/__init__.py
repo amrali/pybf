@@ -1,7 +1,7 @@
 # Copyright (c) Amr Ali <amr.ali.cc@gmail.com>
 # See LICENSE for details.
 
-from .interpreter import Interpreter, EOPError
+from .interpreter import Interpreter
 from .translator import Translator
 from .version import __version__
 
@@ -42,8 +42,8 @@ def pybf_main():
             itr = Interpreter(fd=cont_input, memory_size=args.memory_size)
         else:
             itr = Interpreter(fd=cont_input)
-        while itr.read(256): pass
-        while itr.interpret(): pass
+        itr.read_all()
+        itr.interpret_all()
         sys.stdout.flush()
     elif args.generate:
         if args.memory_size:

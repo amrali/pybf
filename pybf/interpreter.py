@@ -20,11 +20,9 @@ class Interpreter(object):
             raise RuntimeError("either fd or buf has to be specified")
 
         self._fd_in = fd_in
-        sefl._fd_out = fd_out
-        self._ip = 0
-        self._ptr = 0
-        self._memory = [0] * memory_size
-        self._stack = [[], []]
+        self._fd_out = fd_out
+        self._memory_size = memory_size
+        self.reset()
 
     def read(self, n=1):
         """
@@ -35,6 +33,21 @@ class Interpreter(object):
         for op in bfc:
             if self._isvalid_op(op): self._push_op(op)
         return not not bfc
+
+    def read_all(self):
+        """
+        Helper function to read all instructions into memory in one call.
+        """
+        while self.read(512): pass
+
+    def reset(self):
+        """
+        Reset the machine state and clear out all registers.
+        """
+        self._ip = 0
+        self._ptr = 0
+        self._memory = [0] * self._memory_size
+        self._stack = [[], []]
 
     def interpret(self):
         """
@@ -81,6 +94,12 @@ class Interpreter(object):
             self._ip = self._pop_loop_ptr() - 1
         self._ip += 1
         return True
+
+    def interpret_all(self):
+        """
+        Helper function to interpret all instructions in one call.
+        """
+        while self.interpret(): pass
 
     def _isvalid_op(self, bfc):
         return bfc in ['>', '<', '+', '-', '.', ',', '[', ']']
