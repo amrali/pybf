@@ -1,8 +1,10 @@
 PyBF
 ====
 
+|build_status|
+
 A Python package that provides a Brainfuck_ interpreter and code generator modules.
-It also provides command line utility.
+It also provides a command line utility to interpret Brainfuck_ code or generate some.
 
 Interpreting a Brainfuck_ code file is as easy as::
 
@@ -44,3 +46,6 @@ reproduce 1 byte.
 .. _Brainfuck: http://en.wikipedia.org/wiki/Brainfuck
 .. _pip: http://pypi.python.org/pypi/pip
 .. _distutils: http://docs.python.org/2/library/distutils.html
+.. |build_status| image:: https://travis-ci.org/amrali/pybf.png?branch=master
+    :target: https://travis-ci.org/amrali/pybf
+    :alt: Build Status [master]
