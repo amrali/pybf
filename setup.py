@@ -71,5 +71,6 @@ setup(
         license = 'GPLv3+',
         platforms = "Posix; MacOS X; Windows",
         classifiers = classifiers,
+        python_requires='>=3.6',
         cmdclass = {'test': TestCommand },
      )
