@@ -4,14 +4,9 @@
 
 import os
 from unittest import TextTestRunner
-from distutils.core import setup, Command
-from distutils.command.install import INSTALL_SCHEMES
+from setuptools import setup, Command
 from pybf.test import suite as pybf_test_suite
 from pybf import __version__
-
-# Modify the data install dir to match the source install dir
-for scheme in INSTALL_SCHEMES.values():
-    scheme['data'] = scheme['purelib']
 
 def get_samples():
     rel_dir = os.path.join("pybf", "test", "samples")
@@ -51,21 +46,20 @@ classifiers = [
     'Natural Language :: English',
     'Intended Audience :: Developers',
     'Intended Audience :: Information Technology',
-    'Programming Language :: Python :: 2',
-    'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.4',
-    'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
     ]
 
 setup(
         name = 'PyBF',
         version = __version__,
         description = 'Brainfuck interpreter and code generator',
-        long_description = open('README.rst').read(),
+        long_description = open('README.rst', 'r').read(),
         author = 'Amr Ali',
         author_email = 'amr.ali.cc@gmail.com',
         maintainer = 'Amr Ali',
@@ -77,5 +71,6 @@ setup(
         license = 'GPLv3+',
         platforms = "Posix; MacOS X; Windows",
         classifiers = classifiers,
+        python_requires='>=3.6',
         cmdclass = {'test': TestCommand },
      )
