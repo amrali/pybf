@@ -63,11 +63,11 @@ class Interpreter(object):
         if bfc == '>':
             self._ptr += 1
             if self._ptr >= self._memory_size:
-                raise RuntimeError("memory pointer out of bounds")
+                raise RuntimeError("memory pointer out of bounds at instruction %d" % self._ip)
         elif bfc == '<':
             self._ptr -= 1
             if self._ptr < 0:
-                raise RuntimeError("memory pointer out of bounds")
+                raise RuntimeError("memory pointer out of bounds at instruction %d" % self._ip)
         elif bfc == '+':
             self._memory[self._ptr] = (self._memory[self._ptr] + 1) % 256
         elif bfc == '-':
