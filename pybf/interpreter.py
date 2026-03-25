@@ -63,6 +63,8 @@ class Interpreter(object):
                 raise RuntimeError("memory pointer out of bounds")
         elif bfc == '<':
             self._ptr -= 1
+            if self._ptr < 0:
+                raise RuntimeError("memory pointer out of bounds")
         elif bfc == '+':
             self._memory[self._ptr] = (self._memory[self._ptr] + 1) % 256
         elif bfc == '-':
