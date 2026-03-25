@@ -55,5 +55,27 @@ class TestInterpreter(unittest.TestCase):
         res = self._init_sample(self.pybf_samples['utm'], "b1b1bbb1c1c11111d\n")
         self.assertEqual(res, "1c11111\n")
 
+    def test_pointer_overflow(self):
+        # Test that moving right past memory end raises RuntimeError
+        program = '>' * 11  # Move right 11 times with memory_size=10
+        fd = StringIO(program)
+        in_buf = StringIO()
+        out_buf = StringIO()
+        itr = Interpreter(fd=fd, memory_size=10, fd_in=in_buf, fd_out=out_buf)
+        itr.read_all()
+        with self.assertRaises(RuntimeError):
+            itr.interpret_all()
+
+    def test_pointer_underflow(self):
+        # Test that moving left past memory start raises RuntimeError
+        program = '<'  # Move left once from starting position (index 0)
+        fd = StringIO(program)
+        in_buf = StringIO()
+        out_buf = StringIO()
+        itr = Interpreter(fd=fd, memory_size=10, fd_in=in_buf, fd_out=out_buf)
+        itr.read_all()
+        with self.assertRaises(RuntimeError):
+            itr.interpret_all()
+
 tests = unittest.TestSuite()
 tests.addTests(unittest.TestLoader().loadTestsFromTestCase(TestInterpreter))
