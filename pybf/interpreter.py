@@ -2,6 +2,10 @@
 # See LICENSE for details.
 
 import sys
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 class Interpreter(object):
     """
@@ -10,7 +14,6 @@ class Interpreter(object):
     """
 
     def __init__(self, fd=None, buf='', memory_size=30000, fd_in=sys.stdin, fd_out=sys.stdout):
-        from StringIO import StringIO
         super(Interpreter, self).__init__()
         if fd:
             self._fd = fd

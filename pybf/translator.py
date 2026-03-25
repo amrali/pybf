@@ -1,6 +1,17 @@
 # Copyright (c) Amr Ali <amr.ali.cc@gmail.com>
 # See LICENSE for details.
 
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
+try:
+    xrange
+except NameError:
+    # Python 3
+    xrange = range
+
 class Translator(object):
     """
     A Brainfuck translator that takes any content and translate it
@@ -8,7 +19,6 @@ class Translator(object):
     """
 
     def __init__(self, fd=None, buf='', memory_size=16):
-        from StringIO import StringIO
         super(Translator, self).__init__()
         if fd:
             self._fd = fd

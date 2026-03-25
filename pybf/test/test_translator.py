@@ -2,12 +2,15 @@
 # See LICENSE for details.
 
 import unittest
-from StringIO import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 from pybf import Translator, Interpreter
 
 class TestTranslator(unittest.TestCase):
     def test_generation(self):
-        sample = file(__file__)
+        sample = open(__file__)
         tr = Translator(fd=sample)
         prog = tr.get_init_code()
         prog += tr.read_all()
@@ -20,7 +23,7 @@ class TestTranslator(unittest.TestCase):
         itr.interpret_all()
         out_buf.seek(0)
 
-        orig = file(__file__).read()
+        orig = open(__file__).read()
         self.assertEqual(orig, out_buf.read())
 
 tests = unittest.TestSuite()

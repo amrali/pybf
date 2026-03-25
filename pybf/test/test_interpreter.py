@@ -4,12 +4,15 @@
 import os
 import sys
 import unittest
-from StringIO import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 from pybf import Interpreter
 
 def _get_fd(filename):
     samples_dir = os.path.join(os.path.dirname(__file__), "samples")
-    return file(os.path.join(samples_dir, filename))
+    return open(os.path.join(samples_dir, filename))
 
 class TestInterpreter(unittest.TestCase):
     def setUp(self):

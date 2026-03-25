@@ -59,7 +59,7 @@ setup(
         name = 'PyBF',
         version = __version__,
         description = 'Brainfuck interpreter and code generator',
-        long_description = file('README.rst').read(),
+        long_description = open('README.rst').read(),
         author = 'Amr Ali',
         author_email = 'amr.ali.cc@gmail.com',
         maintainer = 'Amr Ali',
