@@ -59,6 +59,8 @@ class Interpreter(object):
 
         if bfc == '>':
             self._ptr += 1
+            if self._ptr >= self._memory_size:
+                raise RuntimeError("memory pointer out of bounds")
         elif bfc == '<':
             self._ptr -= 1
         elif bfc == '+':
