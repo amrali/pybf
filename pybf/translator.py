@@ -8,6 +8,20 @@ class Translator(object):
     """
 
     def __init__(self, fd=None, buf='', memory_size=16):
+        """
+        Initialize the Translator.
+
+        Args:
+            fd: A file-like object to read content from. Mutually exclusive with buf.
+            buf: A string buffer to read content from. Mutually exclusive with fd.
+            memory_size: Number of memory cells to use for translation (default: 16).
+
+        Raises:
+            RuntimeError: If neither fd nor buf is specified.
+
+        Note:
+            Either fd or buf must be provided. If both are provided, fd takes precedence.
+        """
         from io import StringIO
         super().__init__()
         if fd:
