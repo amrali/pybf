@@ -98,9 +98,28 @@ class Translator(object):
         """
         Translate a byte value to the BF code necessary to reproduce it.
         """
+        # Three-stage translation pipeline: MAP -> MOVE -> SET
+        # This order is critical because each stage depends on the previous one:
+        # 1. MAP: Find the optimal cell (closest value to target byte)
+        # 2. MOVE: Generate pointer movement commands to reach that cell
+        # 3. SET: Generate increment/decrement commands to adjust cell to target value
+        #
+        # Why this order? We must know WHICH cell to use (map) before we can
+        # navigate TO it (move), and we must BE at the cell before we can modify
+        # its value (set). Any other order would produce incorrect BF code.
+
+        # Stage 1: MAP - Find the cell with value closest to target byte.
+        # This minimizes the number of +/- operations needed in stage 3.
         ptr = self._map(byte)
+
+        # Stage 2: MOVE - Generate < or > commands to move pointer to optimal cell.
+        # Updates internal pointer tracking (_ptr) to maintain state consistency.
         prog = self._move_ptr(ptr)
+
+        # Stage 3: SET - Generate + or - commands to adjust cell value to target byte.
+        # Updates internal memory state (_memory[ptr]) to track the new cell value.
         prog += self._set_cell(byte)
+
         return prog
 
     def _map(self, byte):
