@@ -65,14 +65,33 @@ class Translator(object):
         cell_4 = 128 <-> 159
         ...
         """
+        # Counter value (ctr=8) determines partition size: 256 / (2*ctr*memory_size)
+        # With default memory_size=16: 256 / (2*8*16) = 1, meaning each partition
+        # covers approximately 256/16 = 16 byte values. This is the trade-off
+        # mentioned in README: more cells = bigger init code but fewer instructions
+        # per byte to translate. Using ctr=8 balances initialization size vs runtime.
         ctr = 8
-        prog = "+" * ctr # Initialize counter cell to 8
-        prog += "[" # Start loop
+
+        # Initialize cell 0 (counter) to 8. This cell will be decremented to 0
+        # during the loop, running the partition setup exactly 8 times.
+        prog = "+" * ctr
+
+        # Start loop: runs while counter cell is non-zero (8 iterations)
+        prog += "["
+
+        # Loop mechanics: Each iteration moves right through all cells and adds
+        # 2*i to cell i. After 8 iterations, cell i contains 2*i*8 = 16*i.
+        # This creates partition boundaries at: 0, 16, 32, 48, 64, 80, 96, 112...
+        # Each cell becomes the "anchor" for its partition (e.g., cell 2 = 32,
+        # which is optimal for byte values 24-39 since it minimizes +/- operations).
         for i in range(0, self._memory_size):
-            prog += ">"
-            prog += "+" * 2 * i
-            self._memory[i] = 2 * i * ctr
-        prog += "<" * self._memory_size + "-]>" # Decrement counter cell
+            prog += ">"  # Move to next cell
+            prog += "+" * 2 * i  # Add 2*i (will execute 8 times in loop)
+            self._memory[i] = 2 * i * ctr  # Track final value: 2*i*8 = 16*i
+
+        # Move back to counter cell and decrement it. Loop continues until counter=0.
+        # Final ">": positions pointer at cell 1 (ready for translation operations).
+        prog += "<" * self._memory_size + "-]>"
         return prog
 
     def _translate(self, byte):
