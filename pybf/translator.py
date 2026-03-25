@@ -107,11 +107,23 @@ class Translator(object):
         """
         Map each byte to the partition/cell that will result in less BF commands.
         """
+        # Goal: Find the cell with value closest to the target byte to minimize
+        # the number of +/- operations needed. For example, to output 'A' (65),
+        # it's more efficient to start from cell 2 (value 32) requiring 33 increments
+        # than to start from cell 0 (value 0) requiring 65 increments.
         cell_ptr_min = 0
         delta_min = 256
+
+        # Linear search strategy: Check every cell to find the one with minimum delta.
+        # This exhaustive search guarantees we find the optimal cell for each byte.
         for ptr in range(0, self._memory_size):
             cell = self._memory[ptr]
+
+            # Delta represents the absolute distance between the cell's current value
+            # and the target byte. This delta directly translates to the number of
+            # +/- BF operations needed to reach the target value from this cell.
             delta = abs(cell - byte)
+
             if delta < delta_min:
                 delta_min = delta
                 cell_ptr_min = ptr
