@@ -66,5 +66,16 @@ class TestInterpreter(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             itr.interpret_all()
 
+    def test_pointer_underflow(self):
+        # Test that moving left past memory start raises RuntimeError
+        program = '<'  # Move left once from starting position (index 0)
+        fd = StringIO(program)
+        in_buf = StringIO()
+        out_buf = StringIO()
+        itr = Interpreter(fd=fd, memory_size=10, fd_in=in_buf, fd_out=out_buf)
+        itr.read_all()
+        with self.assertRaises(RuntimeError):
+            itr.interpret_all()
+
 tests = unittest.TestSuite()
 tests.addTests(unittest.TestLoader().loadTestsFromTestCase(TestInterpreter))
