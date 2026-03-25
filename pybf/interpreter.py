@@ -10,8 +10,8 @@ class Interpreter(object):
     """
 
     def __init__(self, fd=None, buf='', memory_size=30000, fd_in=sys.stdin, fd_out=sys.stdout):
-        from StringIO import StringIO
-        super(Interpreter, self).__init__()
+        from io import StringIO
+        super().__init__()
         if fd:
             self._fd = fd
         elif buf:

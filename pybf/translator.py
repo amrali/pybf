@@ -8,8 +8,8 @@ class Translator(object):
     """
 
     def __init__(self, fd=None, buf='', memory_size=16):
-        from StringIO import StringIO
-        super(Translator, self).__init__()
+        from io import StringIO
+        super().__init__()
         if fd:
             self._fd = fd
         elif buf:
@@ -68,7 +68,7 @@ class Translator(object):
         ctr = 8
         prog = "+" * ctr # Initialize counter cell to 8
         prog += "[" # Start loop
-        for i in xrange(0, self._memory_size):
+        for i in range(0, self._memory_size):
             prog += ">"
             prog += "+" * 2 * i
             self._memory[i] = 2 * i * ctr
@@ -90,7 +90,7 @@ class Translator(object):
         """
         cell_ptr_min = 0
         delta_min = 256
-        for ptr in xrange(0, self._memory_size):
+        for ptr in range(0, self._memory_size):
             cell = self._memory[ptr]
             delta = abs(cell - byte)
             if delta < delta_min:
