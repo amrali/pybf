@@ -35,7 +35,7 @@ def pybf_main():
     if args.input == '-':
         cont_input = sys.stdin
     else:
-        cont_input = file(args.input)
+        cont_input = open(args.input)
 
     if args.interpret:
         if args.memory_size:
