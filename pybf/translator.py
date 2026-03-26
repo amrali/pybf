@@ -19,7 +19,22 @@ class Translator(object):
     """
 
     def __init__(self, fd=None, buf='', memory_size=16):
-        super(Translator, self).__init__()
+        """
+        Initialize the Translator.
+
+        Args:
+            fd: A file-like object to read content from. Mutually exclusive with buf.
+            buf: A string buffer to read content from. Mutually exclusive with fd.
+            memory_size: Number of memory cells to use for translation (default: 16).
+
+        Raises:
+            RuntimeError: If neither fd nor buf is specified.
+
+        Note:
+            Either fd or buf must be provided. If both are provided, fd takes precedence.
+        """
+        from io import StringIO
+        super().__init__()
         if fd:
             self._fd = fd
         elif buf:
@@ -75,34 +90,84 @@ class Translator(object):
         cell_4 = 128 <-> 159
         ...
         """
+        # Counter value (ctr=8) determines partition size: 256 / (2*ctr*memory_size)
+        # With default memory_size=16: 256 / (2*8*16) = 1, meaning each partition
+        # covers approximately 256/16 = 16 byte values. This is the trade-off
+        # mentioned in README: more cells = bigger init code but fewer instructions
+        # per byte to translate. Using ctr=8 balances initialization size vs runtime.
         ctr = 8
-        prog = "+" * ctr # Initialize counter cell to 8
-        prog += "[" # Start loop
-        for i in xrange(0, self._memory_size):
-            prog += ">"
-            prog += "+" * 2 * i
-            self._memory[i] = 2 * i * ctr
-        prog += "<" * self._memory_size + "-]>" # Decrement counter cell
+
+        # Initialize cell 0 (counter) to 8. This cell will be decremented to 0
+        # during the loop, running the partition setup exactly 8 times.
+        prog = "+" * ctr
+
+        # Start loop: runs while counter cell is non-zero (8 iterations)
+        prog += "["
+
+        # Loop mechanics: Each iteration moves right through all cells and adds
+        # 2*i to cell i. After 8 iterations, cell i contains 2*i*8 = 16*i.
+        # This creates partition boundaries at: 0, 16, 32, 48, 64, 80, 96, 112...
+        # Each cell becomes the "anchor" for its partition (e.g., cell 2 = 32,
+        # which is optimal for byte values 24-39 since it minimizes +/- operations).
+        for i in range(0, self._memory_size):
+            prog += ">"  # Move to next cell
+            prog += "+" * 2 * i  # Add 2*i (will execute 8 times in loop)
+            self._memory[i] = 2 * i * ctr  # Track final value: 2*i*8 = 16*i
+
+        # Move back to counter cell and decrement it. Loop continues until counter=0.
+        # Final ">": positions pointer at cell 1 (ready for translation operations).
+        prog += "<" * self._memory_size + "-]>"
         return prog
 
     def _translate(self, byte):
         """
         Translate a byte value to the BF code necessary to reproduce it.
         """
+        # Three-stage translation pipeline: MAP -> MOVE -> SET
+        # This order is critical because each stage depends on the previous one:
+        # 1. MAP: Find the optimal cell (closest value to target byte)
+        # 2. MOVE: Generate pointer movement commands to reach that cell
+        # 3. SET: Generate increment/decrement commands to adjust cell to target value
+        #
+        # Why this order? We must know WHICH cell to use (map) before we can
+        # navigate TO it (move), and we must BE at the cell before we can modify
+        # its value (set). Any other order would produce incorrect BF code.
+
+        # Stage 1: MAP - Find the cell with value closest to target byte.
+        # This minimizes the number of +/- operations needed in stage 3.
         ptr = self._map(byte)
+
+        # Stage 2: MOVE - Generate < or > commands to move pointer to optimal cell.
+        # Updates internal pointer tracking (_ptr) to maintain state consistency.
         prog = self._move_ptr(ptr)
+
+        # Stage 3: SET - Generate + or - commands to adjust cell value to target byte.
+        # Updates internal memory state (_memory[ptr]) to track the new cell value.
         prog += self._set_cell(byte)
+
         return prog
 
     def _map(self, byte):
         """
         Map each byte to the partition/cell that will result in less BF commands.
         """
+        # Goal: Find the cell with value closest to the target byte to minimize
+        # the number of +/- operations needed. For example, to output 'A' (65),
+        # it's more efficient to start from cell 2 (value 32) requiring 33 increments
+        # than to start from cell 0 (value 0) requiring 65 increments.
         cell_ptr_min = 0
         delta_min = 256
-        for ptr in xrange(0, self._memory_size):
+
+        # Linear search strategy: Check every cell to find the one with minimum delta.
+        # This exhaustive search guarantees we find the optimal cell for each byte.
+        for ptr in range(0, self._memory_size):
             cell = self._memory[ptr]
+
+            # Delta represents the absolute distance between the cell's current value
+            # and the target byte. This delta directly translates to the number of
+            # +/- BF operations needed to reach the target value from this cell.
             delta = abs(cell - byte)
+
             if delta < delta_min:
                 delta_min = delta
                 cell_ptr_min = ptr

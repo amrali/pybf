@@ -14,7 +14,24 @@ class Interpreter(object):
     """
 
     def __init__(self, fd=None, buf='', memory_size=30000, fd_in=sys.stdin, fd_out=sys.stdout):
-        super(Interpreter, self).__init__()
+        """
+        Initialize the Brainfuck interpreter.
+
+        Args:
+            fd: File descriptor to read Brainfuck instructions from. Mutually exclusive with buf.
+            buf: String buffer containing Brainfuck instructions. Mutually exclusive with fd.
+            memory_size: Size of the memory tape (default: 30000).
+            fd_in: File descriptor for input operations (default: sys.stdin).
+            fd_out: File descriptor for output operations (default: sys.stdout).
+
+        Raises:
+            RuntimeError: If neither fd nor buf is specified.
+
+        Note:
+            Either fd or buf must be provided, but not both. If both are provided, fd takes precedence.
+        """
+        from io import StringIO
+        super().__init__()
         if fd:
             self._fd = fd
         elif buf:

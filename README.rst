@@ -23,10 +23,9 @@ To install it using pip_ all you have to do is::
 
     $ pip install pybf
 
-To install it using the provided ``setup.py`` file, you'll need to install distutils_ first
-and then issue the following command::
+To install it using the provided ``setup.py`` file, issue the following command::
 
-    $ python setup.py install
+    $ python3 setup.py install
 
 Usage details
 -------------
@@ -43,4 +42,3 @@ reproduce 1 byte.
 
 .. _Brainfuck: http://en.wikipedia.org/wiki/Brainfuck
 .. _pip: http://pypi.python.org/pypi/pip
-.. _distutils: http://docs.python.org/2/library/distutils.html
